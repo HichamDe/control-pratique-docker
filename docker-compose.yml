@@ -1,0 +1,72 @@
+version: '3.9'
+services:
+  api_gateway-mongodb:
+    container_name: api_gateway-mongodb_container
+    image: docker.io/bitnami/mongodb:5.0
+    volumes:
+      - users-mongo-data:/data/users_db
+    networks:
+      - bridge
+  api_gateway-service:
+    container_name: api_gateway-service-container
+    build: ./api_gateway
+    ports:
+      - 7000:7000
+    depends_on:
+      - api_gateway-mongodb
+    environment:
+      - MONGODB_URI=mongodb://api_gateway-mongodb:27019/users_db
+      - API_GATEWAY_PORT=7000
+    restart: always
+    networks:
+      - bridge
+  mongoDB:
+    container_name: mongoDB_container
+    image: docker.io/bitnami/mongodb:5.0
+    volumes:
+      - mongoDB-data:/data/equipes
+    networks:
+      - bridge
+  mongoDBUsers:
+    container_name: mongoDBUsers_container
+    image: docker.io/bitnami/mongodb:5.0
+    volumes:
+      - mongoDB-data:/data/users
+    networks:
+      - bridge
+  tournoi_mysql_db:
+    container_name: tournoi_mysql_db_container
+    build: ./mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=tournoisDb 
+    volumes:
+      - tournois-mysql-data:/var/lib/mysql
+    networks:
+      - bridge
+  equipe_joueur_service:
+    container_name: equipe_joueur_container
+    build: ./equipe-joueur
+    networks:
+      - bridge
+    depends_on:
+      - mongoDB
+  tournoi_service:
+    container_name: tournoi_service_container
+    build: ./tournoi_service
+    environment:
+      - MY_SQL_HOST_NAME=tournoi_mysql_db
+      - MYSQL_DATABASE=tournoisDb
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root
+    restart: always
+    depends_on:
+      - tournoi_mysql_db
+    networks:
+      - bridge
+volumes:
+  mongoDB-data:
+  tournois-mysql-data:
+  users-mongo-data:
+networks:
+  bridge:
