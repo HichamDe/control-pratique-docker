@@ -1,5 +1,7 @@
 version: '3.9'
 services:
+
+
   api_gateway-mongodb:
     container_name: api_gateway-mongodb_container
     image: docker.io/bitnami/mongodb:5.0
@@ -7,6 +9,8 @@ services:
       - users-mongo-data:/data/users_db
     networks:
       - bridge
+
+
   api_gateway-service:
     container_name: api_gateway-service-container
     build: ./api_gateway
@@ -20,6 +24,9 @@ services:
     restart: always
     networks:
       - bridge
+
+
+
   mongoDB:
     container_name: mongoDB_container
     image: docker.io/bitnami/mongodb:5.0
@@ -27,6 +34,9 @@ services:
       - mongoDB-data:/data/equipes
     networks:
       - bridge
+
+
+
   mongoDBUsers:
     container_name: mongoDBUsers_container
     image: docker.io/bitnami/mongodb:5.0
@@ -34,6 +44,9 @@ services:
       - mongoDB-data:/data/users
     networks:
       - bridge
+
+
+
   tournoi_mysql_db:
     container_name: tournoi_mysql_db_container
     build: ./mysql
@@ -44,6 +57,8 @@ services:
       - tournois-mysql-data:/var/lib/mysql
     networks:
       - bridge
+
+
   equipe_joueur_service:
     container_name: equipe_joueur_container
     build: ./equipe-joueur
@@ -51,6 +66,8 @@ services:
       - bridge
     depends_on:
       - mongoDB
+
+
   tournoi_service:
     container_name: tournoi_service_container
     build: ./tournoi_service
@@ -64,6 +81,8 @@ services:
       - tournoi_mysql_db
     networks:
       - bridge
+
+
 volumes:
   mongoDB-data:
   tournois-mysql-data:

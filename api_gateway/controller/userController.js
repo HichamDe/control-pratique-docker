@@ -1,5 +1,5 @@
 import User from '../model/user.js';
-import  bcryptjs  from 'bcryptjs';
+import bcryptjs from 'bcryptjs';
 import jsonwebtoken from 'jsonwebtoken';
 
 class UserController {
@@ -49,7 +49,7 @@ class UserController {
             expiresIn: '1h',
           });
 
-          res.json({ token });
+          res.json({ message: "Logged In", token });
         });
       })
       .catch(error => {
