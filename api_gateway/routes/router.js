@@ -4,25 +4,43 @@ import axios from 'axios';
 import authenticateToken from '../middleware/auth.js';
 const apiGatewayRouter = new Router();
 
-apiGatewayRouter.all("*", authenticateToken , (req, res) => {
+const suppportedServices = {
+
+     //* Add Your Supported Services Here 
+     equipes: {
+          domain: "equipe_joueur_service",
+          instances: 3,
+          counter: 0
+     },
+     joueurs: {
+          domain: "equipe_joueur_service",
+          instances: 3,
+          counter: 0
+     },
+     matches: {
+          domain: "tournoi_service",
+          instances: 5,
+          counter: 0
+     },
+     //* 
+}
+
+
+
+apiGatewayRouter.all("*", authenticateToken, (req, res) => {
 
      const { method, url } = req;
      const data = req.body;
-
-     const suppportedServices = {
-
-          //* Add Your Supported Services Here 
-          equipes: "equipe_joueur_service",
-          joueurs: "equipe_joueur_service",
-          matches: "tournoi_service",
-          
-          //* 
-     }
-
      //* Supports only routes with a single "/" 
-     const domain = suppportedServices[url.replace("/", "")];
+     const route = url.replace("/", "");
 
-     axios[method.toLowerCase()](`http://${domain}:8000${url}`, data).then((result) => {
+     const { domain, instances, counter } = suppportedServices[route];
+
+     const instance = counter > instances ? counter = 0 : counter;
+     suppportedServices[route].counter++;
+
+
+     axios[method.toLowerCase()](`http://${domain}_${instance}:8000${url}`, data).then((result) => {
           res.send(result.data);
 
      }).catch(console.log)
