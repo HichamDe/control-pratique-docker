@@ -2,13 +2,16 @@ import express from 'express';
 import mongoose from 'mongoose';
 import apiGatewayRouter from "./routes/router.js";
 import userRouter from './routes/userRouter.js';
-import requestLimitMiddleware from "./middleware/requestLimiter.js"
+import requestLimitMiddleware from "./middleware/requestLimiter.js";
+import cacher from "./middleware/cacher.js";
+
+
 const app = express();
 const port = process.env.PORT || 7000;
+
 app.use(express.json());
-
-
 app.use(requestLimitMiddleware);
+app.use("/",cacher);
 app.use("/", userRouter);
 app.use('/', apiGatewayRouter);
 
