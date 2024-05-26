@@ -1,19 +1,33 @@
 // const joueurRouter = Router();
-import ServiceForwarder from "../controller/ServiceForwarder.js";
 import { Router } from "express";
+import axios from 'axios';
+import authenticateToken from '../middleware/auth.js';
+const apiGatewayRouter = new Router();
 
-let matchRouter = Router();
-let equipeRouter = Router();
+apiGatewayRouter.all("*", authenticateToken , (req, res) => {
+
+     const { method, url } = req;
+     const data = req.body;
+
+     const suppportedServices = {
+
+          //* Add Your Supported Services Here 
+          equipes: "equipe_joueur_service",
+          joueurs: "equipe_joueur_service",
+          matches: "tournoi_service",
+          
+          //* 
+     }
+
+     //* Supports only routes with a single "/" 
+     const domain = suppportedServices[url.replace("/", "")];
+
+     axios[method.toLowerCase()](`http://${domain}:8000${url}`, data).then((result) => {
+          res.send(result.data);
+
+     }).catch(console.log)
+
+})
 
 
-const matchForwarder = new ServiceForwarder("matches", matchRouter);
-const equipeForwarder = new ServiceForwarder("equipes", equipeRouter);
-
-matchRouter = matchForwarder.router
-equipeRouter = equipeForwarder.router
-
-
-export { matchRouter, equipeRouter }
-
-// export default matchForwarder.router;
-
+export default apiGatewayRouter;

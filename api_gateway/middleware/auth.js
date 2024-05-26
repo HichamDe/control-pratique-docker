@@ -18,4 +18,4 @@
     next();
   });
 }
-export  { authenticateToken };
+export default authenticateToken;
